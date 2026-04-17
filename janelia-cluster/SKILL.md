@@ -36,13 +36,16 @@ Launch interactive job:
 `$SLOTS`
   - Scale the number of slots so that the job will have enough memory
   - Consider parallelization in the code that could benefit from more slots
+
 `$QUEUE`
   - Choose queue based on GPU type needed
   - GPU must have enough VRAM for the job
   - Consider price of the job: ($NSLOTS * .05 + price[$QUEUE]) * $MINUTES / 60
+
 `$MINUTES`
   - Estimate how long the job will take to run
   - Consider adding some buffer time to avoid job termination if it runs slightly longer than expected
+
 `$JOBNAME`
   - Choose a descriptive name for the job with most identifiable information at the end of the name for easier searching in `bjobs`
 
