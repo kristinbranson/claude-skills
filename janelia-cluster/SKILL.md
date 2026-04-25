@@ -206,10 +206,27 @@ Request slots matching the ratio in the GPU table. Over-requesting strands GPUs.
 | `/groups/` | Yes (nightly, 30-day offsite) | Primary storage for scientific data |
 | `/nrs/` | No | Cheaper tier for computationally reproducible data |
 | `/scratch/$USER/` | No | Node-local SSD, ~25GB/slot, clean up after job |
+| `/nearline/` | Yes | Not visible from compute nodes |
 | `/tmp/` | No | Do not use; use `/scratch/` instead |
 
 - Data transfer node: `dtn.int.janelia.org` (for copying to/from nearline)
 - Submit large file copies as cluster jobs, not on login nodes
+- Check quota by running `df -h /nrs/branson` or `df -h /groups/branson` on `login1`
+
+### Workstation vs cluster paths
+
+- Only `/groups/`, `/nrs/`, and `/misc/` are mounted on **both** workstations and cluster nodes (login + compute), with the same paths and contents — use these for anything that needs to be visible from both.
+- `/home/` and `/tmp/` paths (e.g. `/home/<user>@hhmi.org/`) exist **only on the workstation**. They do NOT resolve on cluster nodes.
+- The user's `$HOME` resolves to different paths in different contexts:
+  - On the workstation: `/home/<user>@hhmi.org/`
+  - On `login1` and compute nodes: typically `/groups/<lab>/home/<user>/`
+- When constructing commands that will run on the cluster, prefer `$HOME` (resolved at run time on the cluster) or an explicit `/groups/<lab>/home/<user>/...` path, over a workstation-local `/home/<user>@hhmi.org/...` path.
+
+### Conda
+
+- A user-managed conda is installed at `$HOME/miniforge3/` on each machine. Because `$HOME` differs between workstation and cluster, this resolves to a *different* miniforge3 install in each place — they are independent installs unless the user explicitly mirrors envs.
+- To activate: `source $HOME/miniforge3/etc/profile.d/conda.sh && conda activate <env>`. This works in any context (workstation, login1, compute node) because `$HOME` resolves locally.
+- Envs need to be built separately on the cluster. Cluster jobs that activate `$HOME/miniforge3` will pick up the **cluster's** miniforge3 (under `/groups/<lab>/home/<user>/`), not the workstation's.
 
 ## Containers (Apptainer/Singularity)
 
